@@ -8,9 +8,20 @@ import { authOptions } from '../../auth/[...nextauth]/options';
 
 export async function DELETE(
   request: Request,
-  context: { params: { messageid: string } }
+  // { params }: { params: { messageid: string } }
 ) {
-  const messageId = context.params.messageid;
+  // const messageId = params.messageid;
+   const url = new URL(request.url);
+  const segments = url.pathname.split('/');
+  const messageId = segments[segments.length - 1];
+
+   if (!messageId) {
+    return Response.json(
+      { success: false, message: 'Message ID is required' },
+      { status: 400 }
+    );
+  }
+  
   await dbConnect();
   const session = await getServerSession(authOptions);
   const _user: User = session?.user;
